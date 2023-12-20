@@ -70,10 +70,10 @@ export const getMovieReviews = (id) => {
       return json.results;
   });
 };
-
+/*
 export const getUpcomingMovies = () => {
   return fetch(
-    `https://api.themoviedb.org/3/movie/upcoming?api_key=${process.env.REACT_APP_TMDB_KEY}&language=en-US&page=1`
+    'http://localhost:8080/api/movies/tmdb/upcoming'
   )
     .then((res) => {
       if (!res.ok) {
@@ -85,6 +85,27 @@ export const getUpcomingMovies = () => {
       throw error;
     });
 };
+*/
+export const getUpcomingMovies = () => {
+  // Replace 'YOUR_BEARER_TOKEN' with the actual token value
+  const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwiaWF0IjoxNzAzMDA1MzkxfQ.CciCtvkhk0fWSG4tOBDVW6v5BAXFVGUcNFa0ZFC9DQo';
+
+  return fetch('http://localhost:8080/api/movies/tmdb/upcoming', {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  })
+  .then((res) => {
+    if (!res.ok) {
+      return res.json().then(json => { throw new Error(json.message); });
+    }
+    return res.json();
+  })
+  .catch((error) => {
+    throw error;
+  });
+};
+
 
 export const getNowPlayingMovies = () => {
   return fetch(
