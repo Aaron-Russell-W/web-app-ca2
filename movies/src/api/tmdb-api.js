@@ -228,7 +228,6 @@ export const getLatestMovie = () => {
   return fetch("http://localhost:8080/api/movies/tmdb/movie/latest", {
     headers: {
       'Authorization': `Bearer ${token}`,
-      'accept': 'application/json'
     }
   })
   .then((response) => {

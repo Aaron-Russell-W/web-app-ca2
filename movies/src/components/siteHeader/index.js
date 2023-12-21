@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from "react";
+import React, { useState,useEffect,useContext } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -12,26 +12,36 @@ import { styled } from '@mui/material/styles';
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { getLatestMovie } from "../../api/tmdb-api";
-import { useAuth } from '../../authHelpers'; 
+import { AuthContext } from "../../contexts/authContext";
+//import { useAuth } from '../../authHelpers'; 
 const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
 const SiteHeader = ({ history }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-
+  const {isAuthenticated} = useContext(AuthContext);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   
   const navigate = useNavigate();
 
-  const menuOptions = [
+  let menuOptions = [
     { label: "Home", path: "/" },
     { label: "Favourites", path: "/movies/favourites" },
     { label: "Upcoming", path: "/movies/upcoming" },
     { label: "Now Playing", path: "/movies/nowplaying" },
     { label: "Popular Actors", path: "/actors/popular" }
-  
   ];
+
+  if (isAuthenticated) {
+    // Add or modify options for authenticated users
+    menuOptions.push({ label: "Logout", path: "/logout" });
+  } else {
+    // Add or modify options for unauthenticated users
+    menuOptions.push({ label: "Login", path: "/login" });
+    menuOptions.push({ label: "Sign Up", path: "/signup" });
+  }
+
 
   const handleMenuSelect = (pageURL) => {
     navigate(pageURL, { replace: true });
@@ -55,7 +65,7 @@ const SiteHeader = ({ history }) => {
         console.error("Failed to fetch latest movie:", error);
       });
   }, []);
-  const { currentUser } = useAuth();
+  const { currentUser } = "Temp";
   return (
     <>
       <AppBar position="fixed" color="secondary">
@@ -63,9 +73,7 @@ const SiteHeader = ({ history }) => {
             <Typography variant="h4" sx={{ flexGrow: 1 }}>
               MovieDB
             </Typography>
-          <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            All you ever wanted to know about Movies!
-          </Typography>
+          
           {currentUser && (
             <Typography variant="h6" color="inherit" sx={{ flexGrow: 0, marginRight: 2 }}>
               Welcome, {currentUser.displayName || 'User'}!
