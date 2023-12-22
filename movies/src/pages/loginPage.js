@@ -2,41 +2,68 @@ import React, { useContext, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { AuthContext } from '../contexts/authContext';
 import { Link } from "react-router-dom";
+import { Alert, Box, Button, Container, TextField, Typography } from '@mui/material';
 
 const LoginPage = props => {
     const context = useContext(AuthContext);
-
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState(""); // State to store the error message
 
-    const login = () => {
-        context.authenticate(userName, password);
+    const login = async () => {
+        try {
+            await context.authenticate(userName, password);
+        } catch (e) {
+            setError(e.message); // Set the error message
+        }
     };
 
     let location = useLocation();
-
-    // Set 'from' to path where browser is redirected after a successful login - either / or the protected path user requested
     const { from } = location.state ? { from: location.state.from.pathname } : { from: "/" };
 
-    if (context.isAuthenticated === true) {
+    if (context.isAuthenticated) {
         return <Navigate to={from} />;
     }
 
     return (
-        <>
-            <h2>Login page</h2>
-            <p>You must log in to view the protected pages </p>
-            <input id="username" placeholder="user name" onChange={e => {
-                setUserName(e.target.value);
-            }}></input><br />
-            <input id="password" type="password" placeholder="password" onChange={e => {
-                setPassword(e.target.value);
-            }}></input><br />
-            {/* Login web form  */}
-            <button onClick={login}>Log in</button>
-            <p>Not Registered?
-                <Link to="/signup">Sign Up!</Link></p>
-        </>
+        <Container component="main" maxWidth="xs">
+            <Box display="flex" flexDirection="column" alignItems="center" marginTop={8}>
+                <Typography component="h1" variant="h5">
+                    Login
+                </Typography>
+                {error && <Alert severity="error">{error}</Alert>}
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    label="Username"
+                    autoFocus
+                    value={userName}
+                    onChange={e => setUserName(e.target.value)}
+                />
+                <TextField
+                    margin="normal"
+                    required
+                    fullWidth
+                    label="Password"
+                    type="password"
+                    value={password}
+                    onChange={e => setPassword(e.target.value)}
+                />
+                <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    onClick={login}
+                    sx={{ mt: 3, mb: 2 }}
+                >
+                    Log In
+                </Button>
+                <Link to="/signup">
+                    {"Don't have an account? Sign Up"}
+                </Link>
+            </Box>
+        </Container>
     );
 };
 

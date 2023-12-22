@@ -1,4 +1,4 @@
-import React, { useState,useEffect,useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -13,16 +13,14 @@ import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { getLatestMovie } from "../../api/tmdb-api";
 import { AuthContext } from "../../contexts/authContext";
-//import { useAuth } from '../../authHelpers'; 
 const Offset = styled('div')(({ theme }) => theme.mixins.toolbar);
 
 const SiteHeader = ({ history }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const {isAuthenticated} = useContext(AuthContext);
+  const { isAuthenticated, signout } = useContext(AuthContext);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  
   const navigate = useNavigate();
 
   let menuOptions = [
@@ -34,28 +32,27 @@ const SiteHeader = ({ history }) => {
   ];
 
   if (isAuthenticated) {
-    // Add or modify options for authenticated users
-    menuOptions.push({ label: "Logout", path: "/logout" });
+    menuOptions.push({ label: "Logout", path: "/", action: signout });
   } else {
-    // Add or modify options for unauthenticated users
     menuOptions.push({ label: "Login", path: "/login" });
     menuOptions.push({ label: "Sign Up", path: "/signup" });
   }
 
-
-  const handleMenuSelect = (pageURL) => {
-    navigate(pageURL, { replace: true });
+  const handleMenuSelect = (option) => {
+    if (option.action) {
+      option.action(); // Call the action if it exists (for Logout)
+    } else {
+      navigate(option.path, { replace: true });
+    }
+    setAnchorEl(null); // Close the menu
   };
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const [latestMovie, setLatestMovie] = useState(null);
 
-  // Function to navigate to the movie detail page
-  const navigateToMovieDetail = (movieId) => {
-    navigate(`/movies/${movieId}`);
-  };
   useEffect(() => {
     getLatestMovie()
       .then(data => {
@@ -65,74 +62,68 @@ const SiteHeader = ({ history }) => {
         console.error("Failed to fetch latest movie:", error);
       });
   }, []);
-  const { currentUser } = "Temp";
+
   return (
     <>
       <AppBar position="fixed" color="secondary">
         <Toolbar>
-            <Typography variant="h4" sx={{ flexGrow: 1 }}>
-              MovieDB
-            </Typography>
-          
-          {currentUser && (
-            <Typography variant="h6" color="inherit" sx={{ flexGrow: 0, marginRight: 2 }}>
-              Welcome, {currentUser.displayName || 'User'}!
-            </Typography>
-          )}
-          {latestMovie && (
-          <Button color="inherit" onClick={() => navigateToMovieDetail(latestMovie.id)}>
-            Latest Movie: {latestMovie.title}
-          </Button>
-        )}
-            {isMobile ? (
-              <>
-                <IconButton
-                  aria-label="menu"
-                  aria-controls="menu-appbar"
-                  aria-haspopup="true"
-                  onClick={handleMenu}
-                  color="inherit"
-                >
-                  <MenuIcon />
-                </IconButton>
-                <Menu
-                  id="menu-appbar"
-                  anchorEl={anchorEl}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={open}
-                  onClose={() => setAnchorEl(null)}
-                >
-                  {menuOptions.map((opt) => (
-                    <MenuItem
-                      key={opt.label}
-                      onClick={() => handleMenuSelect(opt.path)}
-                    >
-                      {opt.label}
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </>
-            ) : (
-              <>
+          <Typography variant="h4" sx={{ flexGrow: 1 }}>
+            MovieDB
+          </Typography>
+          {isMobile ? (
+            <>
+              <IconButton
+                aria-label="menu"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={handleMenu}
+                color="inherit"
+              >
+                <MenuIcon />
+              </IconButton>
+              <Menu
+                id="menu-appbar"
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={open}
+                onClose={() => setAnchorEl(null)}
+              >
                 {menuOptions.map((opt) => (
-                  <Button
+                  <MenuItem
                     key={opt.label}
-                    color="inherit"
-                    onClick={() => handleMenuSelect(opt.path)}
+                    onClick={() => handleMenuSelect(opt)}
                   >
                     {opt.label}
-                  </Button>
+                  </MenuItem>
                 ))}
-              </>
-            )}
+              </Menu>
+            </>
+          ) : (
+            <>
+              {menuOptions.map((opt) => (
+                <Button
+                  key={opt.label}
+                  color="inherit"
+                  onClick={() => handleMenuSelect(opt)}
+                >
+                  {opt.label}
+                </Button>
+              ))}
+            </>
+          )}
+          {latestMovie && (
+            <Button color="inherit" onClick={() => navigate(`/movies/${latestMovie.id}`)}>
+              Latest Movie: {latestMovie.title}
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
       <Offset />

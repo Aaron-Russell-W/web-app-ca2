@@ -1,5 +1,6 @@
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXIxIiwiaWF0IjoxNzAzMDA1MzkxfQ.CciCtvkhk0fWSG4tOBDVW6v5BAXFVGUcNFa0ZFC9DQo';
+const token = localStorage.getItem("token");
 export const getMovies = () => {
+  const token = localStorage.getItem("token");
   return fetch('http://localhost:8080/api/movies/tmdb/movies',{
     headers:{
       'Authorization': `Bearer ${token}`
@@ -18,11 +19,12 @@ export const getMovies = () => {
 
 
 export const getMovie = (args) => {
+  const token = localStorage.getItem("token");
   const [, idPart] = args.queryKey;
   const { id } = idPart;
   return fetch(`http://localhost:8080/api/movies/tmdb/movie/${id}`, {
   headers: {
-    'Authorization': `Bearer ${token}`
+    'Authorization': `${token}`
   }
   })
     .then((response) => {
@@ -39,7 +41,7 @@ export const getMovie = (args) => {
 export const getGenres = async () => {
   return fetch("http://localhost:8080/api/movies/tmdb/genres",{
     headers: {
-      'Authorization': `Bearer ${token}`
+      'Authorization': `${token}`
     }
   })
     .then((response) => {
@@ -59,7 +61,7 @@ export const getMovieImages = ({ queryKey }) => {
   const { id } = idPart;
   return fetch(`http://localhost:8080/api/movies/tmdb/movie/${id}/images`, {
     headers: {
-      'Authorization': `Bearer ${token}`
+      'Authorization': `${token}`
     }
   })
   .then((response) => {
@@ -77,7 +79,7 @@ export const getMovieImages = ({ queryKey }) => {
 export const getMovieReviews = (id) => {
   return fetch(`http://localhost:8080/api/movies/tmdb/movie/${id}/reviews`, {
   headers: {
-    'Authorization': `Bearer ${token}`
+    'Authorization': `${token}`
   }
 })
   .then((res) => res.json())
@@ -88,9 +90,11 @@ export const getMovieReviews = (id) => {
 
 
 export const getUpcomingMovies = () => {
+  const token = localStorage.getItem("token");
+  console.log(token)
   return fetch('http://localhost:8080/api/movies/tmdb/upcoming', {
     headers: {
-      'Authorization': `Bearer ${token}`
+      'Authorization': `${token}`
     }
   })
   .then((res) => {
@@ -106,9 +110,10 @@ export const getUpcomingMovies = () => {
 
 
 export const getNowPlayingMovies = () => {
+  const token = localStorage.getItem("token");
   return fetch('http://localhost:8080/api/movies/tmdb/movies/now_playing', {
     headers: {
-      'Authorization': `Bearer ${token}`
+      'Authorization': `${token}`
     }
   })
   .then((res) => {
@@ -129,7 +134,7 @@ export const getMovieWatchProviders = ({queryKey}) => {
   const { id } = idPart;
   return fetch(`http://localhost:8080/api/movies/tmdb/movie/${id}/watch/providers`, {
     headers: {
-      'Authorization': `Bearer ${token}`
+      'Authorization': `${token}`
     }
   })
   .then((res) => {
@@ -148,7 +153,7 @@ export const getPopularActors = () => {
   
   return fetch('http://localhost:8080/api/movies/tmdb/actors/popular', {
     headers: {
-      'Authorization': `Bearer ${token}`
+      'Authorization': `${token}`
     }
   })
   .then((res) => {
@@ -166,7 +171,7 @@ export const getPopularActors = () => {
 export const getActorMovieCredits = (actorId) => {
   return fetch(`http://localhost:8080/api/movies/tmdb/actor/${actorId}/movie_credits`, {
     headers: {
-      'Authorization': `Bearer ${token}`
+      'Authorization': `${token}`
     }
   })
   .then((res) => {
@@ -184,7 +189,7 @@ export const getActorMovieCredits = (actorId) => {
 export const getActorDetails = (actorId) => {
   return fetch(`http://localhost:8080/api/movies/tmdb/actor/${actorId}`, {
     headers: {
-      'Authorization': `Bearer ${token}`
+      'Authorization': `${token}`
     }
   })
   .then(res => {
@@ -207,7 +212,7 @@ export const getMovieCast = (args) => {
 
   return fetch(`http://localhost:8080/api/movies/tmdb/movie/${id}/cast`, {
     headers: {
-      'Authorization': `Bearer ${token}`
+      'Authorization': `${token}`
     }
   })
   .then(res => {
@@ -227,7 +232,7 @@ export const getMovieCast = (args) => {
 export const getLatestMovie = () => {
   return fetch("http://localhost:8080/api/movies/tmdb/movie/latest", {
     headers: {
-      'Authorization': `Bearer ${token}`,
+      'Authorization': `${token}`,
     }
   })
   .then((response) => {
