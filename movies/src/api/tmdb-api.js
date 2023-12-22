@@ -3,7 +3,7 @@ export const getMovies = () => {
   const token = localStorage.getItem("token");
   return fetch('http://localhost:8080/api/movies/tmdb/movies',{
     headers:{
-      'Authorization': `Bearer ${token}`
+      'Authorization': `${token}`
     }
   })
     .then((response) => {
